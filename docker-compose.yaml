@@ -1,0 +1,35 @@
+version: "3.1"
+
+services: 
+  proxy-server:
+    image: jwilder/nginx-proxy
+    container_name: proxy-server
+    ports: 
+      - 80:80
+    volumes: 
+      - /var/run/docker.sock:/tmp/docker.sock
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - docker_local_network
+  
+  mysql-db:
+    image: mysql:latest
+    restart: always
+    container_name: mysql-database
+    command: mysqld --sql_mode=""
+    volumes:
+      - "./data/db:/var/lib/mysql"
+    environment:
+      MYSQL_USER: 'dev'
+      MYSQL_PASSWORD: '12345'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - 3306:3306
+    networks:
+      - docker_local_network
+
+volumes:
+  db_data:
+
+networks:
+  docker_local_network:
